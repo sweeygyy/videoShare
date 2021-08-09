@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title th:text="${title}">title</title>
+	<link rel="stylesheet" type="text/css" href="/css/player.css" />
+</head>
+<body>
+	<video id="player" controls="controls" preload="auto" th:attr="poster=${poster}">
+		<source th:attr="src=${videoPath}" src="/video/test" type="video/mp4" />
+	</video>
+</body>
+
+</html>
