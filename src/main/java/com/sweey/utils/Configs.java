@@ -1,21 +1,23 @@
 package com.sweey.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-@Component("configs")
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties(prefix = "custom")
 public class Configs {
 	
-	@Value("${custom.videoPath}")
 	private String videoPath;
 	
-	@Value("${custom.pictureCachePath}")
 	private String pictureCachePath;
+	
+	private List<String> acceptTypes;
 	
 	public String getVideoPath() {
 		return videoPath;
 	}
-
 	
 	public void setVideoPath(String videoPath) {
 		this.videoPath = videoPath;
@@ -29,4 +31,13 @@ public class Configs {
 	public void setPictureCachePath(String pictureCachePath) {
 		this.pictureCachePath = pictureCachePath;
 	}
+
+	public List<String> getAcceptTypes() {
+		return acceptTypes;
+	}
+
+	public void setAcceptTypes(List<String> acceptTypes) {
+		this.acceptTypes = acceptTypes;
+	}
+	
 }

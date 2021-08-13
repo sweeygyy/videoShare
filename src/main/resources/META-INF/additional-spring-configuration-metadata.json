@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "custom.acceptTypes",
+    "type": "java.lang.List",
+    "description": "A description for 'custom.acceptTypes'"
+  },
+  {
+    "name": "custom.videoPath",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.videoPath'"
+  },
+  {
+    "name": "custom.pictureCachePath",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.pictureCachePath'"
+  },
+  {
+    "name": "custom.videoPath",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.videoPath'"
+  }
+]}
