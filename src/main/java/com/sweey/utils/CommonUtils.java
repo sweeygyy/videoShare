@@ -59,8 +59,8 @@ public class CommonUtils {
   			//分多次将一个文件读入，对于大型文件而言，比较推荐这种方式，占用内存比较少。
   			byte[] buffer = new byte[4096];
   			int length = -1;
-  			// 文件过大，隔10MB取一次
-  			long step = 10485760;
+  			// 文件过大，隔50MB取一次
+  			long step = 10485760 * 5;
   			while ((length = fis.read(buffer, 0, 1024)) != -1) {
   				md.update(buffer, 0, length);
   				fis.skip(step);

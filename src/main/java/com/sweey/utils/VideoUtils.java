@@ -8,14 +8,13 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 import com.sweey.beans.VideoItem;
 
 @Component
@@ -33,8 +31,10 @@ public class VideoUtils {
 	
 	private static Map<String, VideoItem> videoMap;
 	
+	private static List<VideoItem> videoList;
+	
 	public VideoUtils(CommonUtils commonUtils) {
-		initVideoMap(CommonUtils.getVideoPath());
+		initVideos(CommonUtils.getVideoPath());
 	}
 	
 	/**
@@ -198,8 +198,9 @@ public class VideoUtils {
 		return new java.awt.Rectangle(new Dimension(des_width, des_height));
 	}
 	
-	public static void initVideoMap(String videoPath) {
+	public static void initVideos(String videoPath) {
 		VideoUtils.videoMap = new HashMap<String, VideoItem>();
+		VideoUtils.videoList = new ArrayList<VideoItem>();
 		File file = new File(videoPath);
 		traverseFolder(file);
 	}
@@ -226,6 +227,7 @@ public class VideoUtils {
 				item.setScreenShot(Base64Utils.encodeToString(getVideoScreenshot(id + "_cover", file.getAbsolutePath())));
 				item.setPath(file.getAbsolutePath());
 				VideoUtils.videoMap.put(item.getId(), item);
+				VideoUtils.videoList.add(item);
 				LOGGER.info("");
 			}
 		}
@@ -235,8 +237,7 @@ public class VideoUtils {
 		return videoMap;
 	}
 
-	public static void setVideoMap(Map<String, VideoItem> videoMap) {
-		VideoUtils.videoMap = videoMap;
+	public static List<VideoItem> getVideoList() {
+		return videoList;
 	}
-	
 }

@@ -18,5 +18,10 @@
     "name": "custom.videoPath",
     "type": "java.lang.String",
     "description": "A description for 'custom.videoPath'"
+  },
+  {
+    "name": "custom.rowPerPage",
+    "type": "java.lang.String",
+    "description": "A description for 'custom.rowPerPage'"
   }
 ]}

@@ -1,4 +1,97 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #222;
+    background-color: #fff;
+}
+
 #player {
-	height : 680px;
-	width : 1200px;
+	height : 100%;
+	width : 100%;
+	display: block;
+}
+
+.player-poster {
+	height : 100%;
+	width : 100%;
+	position : absolute;
+}
+
+.myPlayer * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.bilibili-player .bilibili-player-area.video-state-pause .bilibili-player-video-wrap .bilibili-player-video-panel, .bilibili-player .bilibili-player-area.video-state-pause .bilibili-player-video-wrap .bilibili-player-video-state {
+    display: block;
+}
+.bilibili-player-video-state {
+    display: none;
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    cursor: pointer;
+    z-index: 67;
+    right: 40px;
+    bottom: 80px;
+    pointer-events: none;
+}
+
+.bilibili-player .bilibili-player-area .bilibili-player-video-wrap .bilibili-player-video-state-play {
+    margin-top: 10px;
+}
+
+.bilibili-player .bilibili-player-area .bilibili-player-video-wrap .bilibili-player-video-state-buff-icon, .bilibili-player .bilibili-player-area .bilibili-player-video-wrap .bilibili-player-video-state-buff-text {
+    display: none;
+}
+
+.v-wrap {
+    max-width: 1984px;
+    min-width: 988px;
+    margin: 0 auto;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.l-con {
+    width: 1086px;
+}
+
+.relative {
+    position: relative;
+}
+
+.bilibili-player {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 4px;
+    text-align: left;
+    -webkit-box-shadow: 0 0 8px #e5e9ef;
+    box-shadow: 0 0 8px #e5e9ef;
+    white-space: nowrap;
+    zoom: 1;
+}
+
+.bilibili-player {
+    font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
+    line-height: 1;
 }

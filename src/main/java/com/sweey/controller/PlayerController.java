@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,13 +29,17 @@ public class PlayerController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PlayerController.class);
 	
+	public static final String BASE64IMGHEAD = "data:image/png;base64,";
+	
 	@RequestMapping("/play/{id}")
 	public String play(@PathVariable(name = "id") String id, Model model) {
-		model.addAttribute("title", "播放");
 		if (id != null) {
+			VideoItem videoItem = VideoUtils.getVideoMap().get(id);
+			model.addAttribute("title", videoItem.getName());
+			model.addAttribute("poster", BASE64IMGHEAD + videoItem.getScreenShot());
 			model.addAttribute("videoPath", "/videoStream/" + id);
 		} else {
-			model.addAttribute("videoPath", "/videoStream/1");
+			model.addAttribute("videoPath", "/video/test2.MOV");
 		}
 		return "player";
 	}
@@ -116,11 +121,23 @@ public class PlayerController {
 		byte[] data = out.toByteArray();
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Range", "bytes " + startPos +"-"+ endPos +"/" + length);
-		header.add("content-type", " video/mp4");
+		header.add("content-type", "video/mp4");
 		header.add("Cache-Control", "no-cache, no-store, must-revalidate");
 		
 		ResponseEntity<byte[]> resp = new ResponseEntity<byte[]>(data, header, HttpStatus.PARTIAL_CONTENT);
 		return resp;
 	}
 	
+	@RequestMapping("/preveiew/{id}")
+	public ResponseEntity<byte[]> preview(@PathVariable(name = "id") String id) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		
+		HttpHeaders header = new HttpHeaders();
+		header.add("content-type", "image/webp");
+		header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+		byte[] data = out.toByteArray();
+		ResponseEntity<byte[]> resp = new ResponseEntity<byte[]>(data, header, HttpStatus.PARTIAL_CONTENT);
+		return resp;
+	}
 }

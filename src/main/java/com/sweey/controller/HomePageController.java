@@ -1,16 +1,12 @@
 package com.sweey.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -36,16 +32,30 @@ public class HomePageController {
 	
 	@ResponseBody
 	@RequestMapping("/list")
-	public List<VideoItem> getVideoList() {
-		LOG.info("/list");
+	public List<VideoItem> getVideoFirstList() {
+		int page = 1;
+		return getVideoList(page);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list/{page}")
+	public List<VideoItem> getVideoList(@PathVariable(name = "page") int page) {
+		int rowsPerPage = CommonUtils.getConfigs().getRowsPerPage();
+		int startIndex = (page - 1) * rowsPerPage;
+		int endIndex = startIndex + rowsPerPage;
 		List<VideoItem> result = new ArrayList<VideoItem>();
-		Map<String, VideoItem> videoMap = VideoUtils.getVideoMap();
-		Collection<VideoItem> values = videoMap.values();
-		Iterator<VideoItem> iterator = values.iterator();
-		while (iterator.hasNext()) {
-			VideoItem next = iterator.next();
-			result.add(next);
+		List<VideoItem> all = VideoUtils.getVideoList();
+		for (int i = startIndex; i < endIndex && i < all.size(); i++) {
+			result.add(all.get(i));
 		}
 		return result;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/pageCount")
+	public int getPageCount() {
+		int rowsPerPage = CommonUtils.getConfigs().getRowsPerPage();
+		int videoCount = VideoUtils.getVideoList().size();
+		return (int) Math.ceil(((double)videoCount) / rowsPerPage);
 	}
 }

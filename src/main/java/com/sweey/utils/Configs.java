@@ -13,6 +13,10 @@ public class Configs {
 	
 	private String pictureCachePath;
 	
+	private int rowsPerPage;
+	
+	private boolean renderPerview;
+	
 	private List<String> acceptTypes;
 	
 	public String getVideoPath() {
@@ -38,6 +42,22 @@ public class Configs {
 
 	public void setAcceptTypes(List<String> acceptTypes) {
 		this.acceptTypes = acceptTypes;
+	}
+
+	public int getRowsPerPage() {
+		return rowsPerPage;
+	}
+
+	public void setRowsPerPage(int rowsPerPage) {
+		this.rowsPerPage = rowsPerPage;
+	}
+
+	public boolean isRenderPerview() {
+		return renderPerview;
+	}
+
+	public void setRenderPerview(boolean renderPerview) {
+		this.renderPerview = renderPerview;
 	}
 	
 }

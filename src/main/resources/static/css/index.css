@@ -19,6 +19,10 @@ em, i {
     font-weight: 400;
 }
 
+i {
+    display: inline-block;
+}
+
 a {
     text-decoration: none;
     outline: 0;
@@ -49,6 +53,11 @@ a {
     border-radius: 4px;
 }
 
+.video-item.matrix .title:hover {
+    color: #00a1d6;
+}
+
+
 .video-item.matrix .info {
     padding: 8px 10px 0;
 }
@@ -65,6 +74,72 @@ a {
 
 .clearfix {
     *zoom: 1;
+}
+.video-item.list {
+    position: relative;
+    height: 100px;
+    width: 808px;
+    padding: 20px 0 20px 172px;
+    border-bottom: 1px solid #e5e9ef;
+}
+
+.video-item.list .img {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    height: 100px;
+    width: 160px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.video-item.list .headline {
+    height: 24px;
+    font-size: 0;
+    line-height: 23px;
+}
+
+.video-item.list .type {
+    float: left;
+    border-radius: 12px;
+    padding: 0 10px;
+    border: 1px solid #e5e9ef;
+    color: #6d757a;
+    text-align: center;
+    margin-right: 10px;
+    font-size: 12px;
+    display: block;
+}
+
+.video-item.list .title {
+    margin-right: 6px;
+    font-size: 16px;
+    color: #222;
+    max-width: 592px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    float: left;
+}
+
+.video-item.list .des {
+    margin-top: 14px;
+    width: 762px;
+    max-height: 36px;
+    overflow: hidden;
+    color: #99a2aa;
+    line-height: 18px;
+    display: block;
+}
+
+.video-item.list .tags {
+    position: absolute;
+    bottom: 20px;
+    left: 172px;
+}
+
+.video-item.list .so-icon {
+    margin-right: 20px;
 }
 
 .video-item.matrix .hide {
@@ -240,6 +315,10 @@ a {
     white-space: nowrap;
 }
 
+.video-item .so-icon .up-name:hover {
+    color: #00a1d6;
+}
+
 .video-item .so-icon>a {
     color: #99a2aa;
     cursor: pointer;
@@ -274,4 +353,256 @@ a {
     display: block;
     background: #ccc;
     height: 2px;
+}
+
+.page-wrap .pager {
+    width: 924px;
+    height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: #fff;
+    padding: 30px 27px 35px;
+    text-align: center;
+}
+
+.pager .pages {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.pager .pages .page-item {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.page-wrap .pager .pages .page-item {
+    margin-right: 8px;
+}
+
+.page-wrap .pager .pages .page-item button {
+    min-width: 17px;
+    height: 40px;
+}
+
+.pager .pages .page-item.active button, .pager .pages .page-item button:hover {
+    background: #00a1d6;
+    color: #fff;
+    border: 1px solid #00a1d6;
+}
+
+.pager .pages .page-item button {
+    color: #222;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    background-image: none;
+    transition: all .2s;
+    font-size: 14px;
+    min-width: 15px;
+    margin: 0 2px;
+    padding: 0 13px;
+    float: left;
+    display: block;
+    height: 38px;
+    line-height: 38px;
+}
+
+.load-state {
+    text-align: center;
+    padding: 10px 0;
+    color: #99a2aa;
+    height: 540px;
+    display: table;
+    width: 100%;
+}
+
+.load-state .loading {
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.load-state .loading:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    margin-right: 5px;
+    width: 24px;
+    height: 24px;
+    margin-top: -5px;
+    background-image: url(/img/loading.gif);
+    text-align: center;
+}
+
+.filter-wrap {
+    height: auto;
+    padding: 20px 0 11px;
+    position: relative;
+    display: table;
+    width: 100%;
+}
+
+.filter-wrap .filter-type {
+    width: 970px;
+    margin-bottom: 10px;
+}
+
+.filter-wrap .filter-item.active {
+    background-color: #00a1d6;
+}
+
+.filter-wrap .filter-item {
+    float: left;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.filter-wrap .filter-item.active a {
+    color: #fff;
+}
+
+
+.filter-wrap .filter-item a {
+    color: #222;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.filter-type.tids_1 {
+    position: relative;
+    height: 44px;
+}
+
+.filter-wrap .fold.up {
+    bottom: 18px;
+}
+
+.filter-wrap .fold {
+    position: absolute;
+    border-radius: 4px;
+    line-height: 24px;
+    font-size: 12px;
+    color: #6d757a;
+    right: 0;
+    display: inline-block;
+    width: 74px;
+    text-align: center;
+}
+
+.filter-wrap .fold.down {
+    left: 416px;
+    top: 18px;
+}
+
+.filter-wrap .fold:hover {
+    background-color: #e5e9ef;
+    color: #00a1d6;
+}
+
+.filter-wrap .filter-type.tids_1>.filter-item:nth-child(2) {
+    margin-left: 6px;
+}
+
+.filter-wrap .filter-type.tids_1>.filter-item.is-second {
+    margin-top: 4px;
+}
+
+.filter-wrap .filter-type.tids_1>.filter-item {
+    margin-right: 6px;
+}
+
+.arrow-down, .arrow-up {
+    background-image: url(//s1.hdslb.com/bfs/static/jinkela/search/assets/sprite-690be8a6ea.png);
+    width: 12px;
+    height: 6px;
+    vertical-align: middle;
+    margin-top: -2px;
+    margin-left: 3px;
+}
+
+.arrow-up {
+    background-position: -442px -403px;
+}
+
+.arrow-down {
+    background-position: -442px -439px;
+}
+
+#all-list .switch-wrap {
+    top: 20px;
+}
+
+.switch-wrap {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    z-index: 999;
+}
+
+.switch-wrap .aver {
+    right: 26px;
+}
+
+.switch-wrap .type {
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+}
+
+.switch-wrap .aver.active:hover i, .switch-wrap .aver.active i {
+    background-position: -206px -139px;
+}
+
+.switch-wrap i.icon-aver {
+    background-position: -194px -376px;
+}
+
+.switch-wrap .aver:hover i {
+    background-position: -206px -185px;
+}
+
+.switch-wrap i {
+    background-image: url(//s1.hdslb.com/bfs/static/jinkela/search/assets/sprite-690be8a6ea.png);
+    width: 16px;
+    height: 16px;
+}
+
+.switch-wrap .imgleft {
+    right: 0;
+}
+
+.switch-wrap i.icon-imgleft {
+    background-position: -148px -376px;
+}
+
+.switch-wrap .imgleft:hover i {
+    background-position: -196px -327px;
+}
+
+.filter-wrap .filter-wrap_bottom {
+    width: 100%;
+    height: 1px;
+    background: #e5e9ef;
+    position: absolute;
+    bottom: 0;
+    z-index: -1;
+}
+
+.pager .pages strong {
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 2px;
+    padding: 0 10px;
 }
