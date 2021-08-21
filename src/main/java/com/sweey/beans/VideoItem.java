@@ -4,7 +4,9 @@ public class VideoItem {
 	private String id;
 	private String name;
 	private long duration;
+	private int framesCount;
 	private String screenShot;
+	private byte[] preview;
 	private String path;
 	public String getId() {
 		return id;
@@ -35,6 +37,18 @@ public class VideoItem {
 	}
 	public void setPath(String path) {
 		this.path = path;
+	}
+	public byte[] getPreview() {
+		return preview;
+	}
+	public void setPreview(byte[] preview) {
+		this.preview = preview;
+	}
+	public int getFramesCount() {
+		return framesCount;
+	}
+	public void setFramesCount(int framesCount) {
+		this.framesCount = framesCount;
 	}
 	
 }

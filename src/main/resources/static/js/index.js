@@ -1,15 +1,15 @@
 const TEMPLATE = "<li class=\"video-item ${displayType}\"><a\r\n"
 				+ "					href=\"/play/${id}\"\r\n"
 				+ "					title=\"${title}\" target=\"_blank\" class=\"img-anchor\">\r\n"
-				+ "					<div class=\"img\">\r\n"
+				+ "					<div videoId=\"${id}\" class=\"img\">\r\n"
 				+ "						<div class=\"lazy-img\"><img alt=\"\"\r\n"
 				+ "								src=\"${screenshot}\">\r\n"
 				+ "						</div><span class=\"so-imgTag_rb\">${time}</span>\r\n"
 				+ "						<div class=\"watch-later-trigger watch-later\"></div><span class=\"mask-video\"></span>\r\n"
-				+ "						<div class=\"van-framepreview\"\r\n"
+				+ "						<!-- <div class=\"van-framepreview\"\r\n"
 				+ "							style=\"background-position: -336px -840.5px; opacity: 0; background-image: url('/img/280207195.jpg@85q.webp'); background-size: 1680px;\">\r\n"
 				+ "							<div class=\"van-fpbar-box\"><span style=\"width: 33%;\"></span></div>\r\n"
-				+ "						</div>\r\n"
+				+ "						</div> -->\r\n"
 				+ "					</div>\r\n"
 				+ "					<!---->\r\n"
 				+ "				</a>\r\n"
@@ -54,29 +54,14 @@ $(document).ready(function () {
 			$(".pages").bind("click", toPage);
 		}
 	});
-	$("div.img").bind("mousemove", (function (e) {
-		updateBackground.call(this, e.offsetX);
-	}));
-	$("div.img").bind("mouseenter", (function (e) {
-		if ($(this).find(".van-framepreview").length < 1) {
-			var framePreview = document.createElement("div");
-			var fpbarBox = document.createElement("div");
-			var line = document.createElement("span");
-			framePreview.className = "van-framepreview";
-			fpbarBox.className = "van-fpbar-box";
-			framePreview.style.backgroundPosition = "0 10px",
-			fpbarBox.appendChild(line);
-			framePreview.appendChild(fpbarBox);
-			this.appendChild(framePreview);
-		}
-	}
-	));
 	function renderPage(data) {
+		store.videoItems = store.videoItems || {};
 		$(".video-list").empty();
 		showLoading(false);
 		for (var i = 0; i < data.length; i++) {
 			var temp = TEMPLATE;
 			var row = data[i];
+			store.videoItems[row.id] = row;
 			temp = temp.replace(/\$\{id\}/g, row.id);
 			temp = temp.replace(/\$\{time\}/g, utils.formatSeconds(parseInt(row.duration/ 1000000)));
 			temp = temp.replace(/\$\{screenshot\}/g, BASE64Header + row.screenShot);
@@ -84,15 +69,65 @@ $(document).ready(function () {
 			temp = temp.replace(/\$\{displayType\}/g, utils.isMobile() ? "list" : "matrix");
 			$(".video-list").append($(temp));
 		}
+		bindListeners();
+	}
+	function bindListeners() {
+		$("div.img").bind("mousemove", (function (e) {
+			updateBackground.call(this, e.offsetX);
+		}));
+		$("div.img").bind("mouseenter", (function (e) {
+			this.leaved = false;
+			var that = this;
+			setTimeout(function() {
+				var framePreview = null;
+				if ($(that).find(".van-framepreview").length < 1) {
+					framePreview = document.createElement("div");
+					var fpbarBox = document.createElement("div");
+					var line = document.createElement("span");
+					framePreview.className = "van-framepreview";
+					fpbarBox.className = "van-fpbar-box";
+					framePreview.style.backgroundPosition = "0 10px",
+					framePreview.style.backgroundImage = "url('/preview/"+ $(that).attr("videoId") +"')";
+					fpbarBox.appendChild(line);
+					framePreview.appendChild(fpbarBox);
+					that.appendChild(framePreview);
+				} else {
+					framePreview = $(that).find(".van-framepreview")[0];
+				}
+				updateBackground.call(that, 0);
+				if (that.leaved) {
+					framePreview.style.opacity = 0;
+				} else {
+					framePreview.style.opacity = 1;
+				}
+			}, 350);
+		}
+		));
+		$("div.img").bind("mouseleave", (function (e) {
+			var framePreview = $(this).find(".van-framepreview")[0];
+			this.leaved = true;
+			if (framePreview) {
+				framePreview.style.opacity = 0;
+			}
+		}
+	));
 	}
 	function updateBackground(layerX) {
+		if (layerX < 0) {
+			layerX = 0;
+		}
+		// if (layerX >= this.offsetWidth) {
+		// 	layerX = this.offsetWidth - 1;
+		// }
 		var p = {
 			img_x_len: 10,
 			img_x_size: 160,
 			img_y_len: 10,
 			img_y_size: 90
 		};
-		var n = 278
+		var videoId = $(this).attr("videoId");
+		var time = parseInt(store.videoItems[videoId].duration / 1000000);
+		var n = Math.floor(parseInt(time / 5)) < 99 ? Math.floor(parseInt(time / 5)) : 99
 			, r = this.offsetWidth
 			, o = p.img_y_size / p.img_x_size * r
 			, i = Math.floor(layerX / r * 100)
@@ -102,9 +137,11 @@ $(document).ready(function () {
 			, f = -Math.floor(s / p.img_x_len) * o + 10;
 			var u = $(this).find(".van-framepreview")[0];
 			var l = $(this).find(".van-fpbar-box span")[0];
-			u.style.backgroundPosition = c + "px " + f + "px",
-			u.style.backgroundSize = a + "px",
-			l.style.width = i + "%"
+			if (u) {
+				u.style.backgroundPosition = c + "px " + f + "px",
+				u.style.backgroundSize = a + "px",
+				l.style.width = i + "%"
+			}
 	}
 	function buildPageBar(currentPage, totalPage) {
 		if (currentPage != 1) {

@@ -24,12 +24,18 @@ body {
 	position : absolute;
 }
 
-.myPlayer * {
+.bilibili-player * {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+#bilibili-player {
+    width: 1086px;
+    /* height: 745px; */
+    position: static;
 }
 
 .bilibili-player .bilibili-player-area.video-state-pause .bilibili-player-video-wrap .bilibili-player-video-panel, .bilibili-player .bilibili-player-area.video-state-pause .bilibili-player-video-wrap .bilibili-player-video-state {
@@ -45,6 +51,11 @@ body {
     right: 40px;
     bottom: 80px;
     pointer-events: none;
+}
+
+.bilibili-player .bilibili-player-area {
+    width: 100%;
+    height: 100%;
 }
 
 .bilibili-player .bilibili-player-area .bilibili-player-video-wrap .bilibili-player-video-state-play {

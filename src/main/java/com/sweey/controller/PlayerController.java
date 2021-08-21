@@ -15,13 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sweey.beans.VideoItem;
-import com.sweey.utils.CommonUtils;
-import com.sweey.utils.Configs;
 import com.sweey.utils.VideoUtils;
 
 @Controller
@@ -128,15 +125,26 @@ public class PlayerController {
 		return resp;
 	}
 	
-	@RequestMapping("/preveiew/{id}")
+	@RequestMapping("/preview/{id}")
 	public ResponseEntity<byte[]> preview(@PathVariable(name = "id") String id) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
-		
+		VideoItem videoItem = VideoUtils.getVideoMap().get(id);
+		byte[] data = null;
+		if (videoItem.getPreview() != null) {
+			data = videoItem.getPreview();
+		} else {
+			synchronized(videoItem) {
+				if (videoItem.getPreview() == null) {
+					data = VideoUtils.getVideoPreview(id);
+					// 缓存一下
+					videoItem.setPreview(data);
+				} else {
+					data = videoItem.getPreview();
+				}
+			}
+		}
 		HttpHeaders header = new HttpHeaders();
 		header.add("content-type", "image/webp");
 		header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-		byte[] data = out.toByteArray();
 		ResponseEntity<byte[]> resp = new ResponseEntity<byte[]>(data, header, HttpStatus.PARTIAL_CONTENT);
 		return resp;
 	}

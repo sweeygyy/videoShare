@@ -15,6 +15,8 @@ var utils = {
 		var result = (theTime < 10 ? "0" : "") + parseInt(theTime);
 		if (middle > 0 || hour > 0) {
 			result = (middle < 10 ? "0" : "") + parseInt(middle) + ":" + result;
+		} else {
+			result = "00:" + result;
 		}
 		if (hour > 0) {
 			result = (hour < 10 ? "0" : "") + parseInt(hour) + ":" + result;
@@ -26,4 +28,9 @@ var utils = {
 		var ua = navigator.userAgent;
 		return ua.toLowerCase().match(/(ipod|iphone|android|coolpad|mmp|smartphone|midp|wap|xoom|symbian|j2me|blackberry|wince)/i) != null;
 	},
+
+	isFireFox: function() {
+		var ua = navigator.userAgent;
+		return ua.indexOf('Firefox') >= 0
+	}
 }

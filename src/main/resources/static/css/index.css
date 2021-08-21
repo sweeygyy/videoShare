@@ -232,6 +232,25 @@ a {
     height: 100%;
 }
 
+.van-framepreview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity .3s;
+    z-index: 1;
+}
+
+.van-framepreview .van-fpbar-box span {
+    display: block;
+    background: #fff;
+    height: 2px;
+    transition: width .12s;
+}
+
 .video-item .img .mask-video {
     opacity: 0;
     background: rgba(0,0,0,.2);
