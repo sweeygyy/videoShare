@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sweey.beans.VideoItem;
+import com.sweey.utils.CommonUtils;
 import com.sweey.utils.VideoUtils;
 
 @Controller
@@ -46,7 +47,7 @@ public class PlayerController {
 		VideoItem videoItem = VideoUtils.getVideoMap().get(id);
 		String videoPath = videoItem.getPath();
 		String range = request.getHeader("Range");
-		long maxLength = 10485759; // 10MB
+		long maxLength = CommonUtils.getConfigs().getMaxLengthPerRequest(); //10485759; // 10MB
 		long startPos = 0;
 		long endPos = maxLength;
 		if (!StringUtils.isBlank(range)) {

@@ -18,7 +18,7 @@ const TEMPLATE = "<li class=\"video-item ${displayType}\"><a\r\n"
 				+ "						<!---->\r\n"
 				+ "						<!----><span class=\"type hide\">R18</span><a title=\"${title}\"\r\n"
 				+ "							href=\"/play/${id}\"\r\n"
-				+ "							target=\"_blank\" class=\"title\">${title}</a></div>\r\n"
+				+ "							target=\"_blank\" class=\"title\">${heightLightTitle}</a></div>\r\n"
 				+ "					<div class=\"des hide\">\r\n"
 				+ "						第二案：蓝衫记av52590385\r\n"
 				+ "						第三案：滴血雄鹰av55016928\r\n"
@@ -35,7 +35,7 @@ const TEMPLATE = "<li class=\"video-item ${displayType}\"><a\r\n"
 				+ "							2019-05-02\r\n"
 				+ "						</span><span title=\"up主\" class=\"so-icon\"><i class=\"icon-uper\"></i><a\r\n"
 				+ "								href=\"//space.bilibili.com/4408538?from=search&amp;seid=5093102736682967731\"\r\n"
-				+ "								target=\"_blank\" class=\"up-name\">管理员</a></span></div>\r\n"
+				+ "								target=\"_blank\" class=\"up-name\">戎晓栋官方</a></span></div>\r\n"
 				+ "				</div>\r\n"
 				+ "			</li>";
 const BASE64Header = "data:image/png;base64,"
@@ -44,16 +44,46 @@ const LOADING = "<div class=\"flow-loader-state-loading\"><div class=\"load-stat
 
 $(document).ready(function () {
 	var store = {};
-	$.ajax({
-		url: "/list", async: true, success: renderPage
-	});
-	$.ajax({
-		url: "/pageCount", async: true, success: function(data) {
-			store.pageCount = data;
-			buildPageBar(1, data);
-			$(".pages").bind("click", toPage);
+	init();
+	store.searchingKeyword = "";
+	$(".search-button").bind("click", function(e) {
+		var value = $("#search-keyword").val();
+		if (value != store.searchingKeyword) {
+			$(".video-list").empty();
+			$(".pages").empty();
+			showLoading(true);
+			$('html,body').animate({ scrollTop: 0 }, 50);
+			store.searchingKeyword = value;
+			if (value == "") {
+				init();
+			} else {
+				$.ajax({
+					url: "/search/" + value, async: true, success: function(data) {
+						store.pageCount = data.pageCount;
+						var resultItems = data.resultItems;
+						buildPageBar(1, store.pageCount);
+						renderPage(resultItems);
+						store.isSearchResult = true;
+					}
+				});
+			}
 		}
 	});
+	function init() {
+		$.ajax({
+		url: "/list", async: true, success: function(data) {
+			renderPage(data);
+			store.isSearchResult = false;
+		}
+		});
+		$.ajax({
+			url: "/pageCount", async: true, success: function(data) {
+				store.pageCount = data;
+				buildPageBar(1, data);
+				$(".pages").bind("click", toPage);
+			}
+		});
+	}
 	function renderPage(data) {
 		store.videoItems = store.videoItems || {};
 		$(".video-list").empty();
@@ -65,11 +95,31 @@ $(document).ready(function () {
 			temp = temp.replace(/\$\{id\}/g, row.id);
 			temp = temp.replace(/\$\{time\}/g, utils.formatSeconds(parseInt(row.duration/ 1000000)));
 			temp = temp.replace(/\$\{screenshot\}/g, BASE64Header + row.screenShot);
+			var heightLightHtml = getHeightLightHtml(row.name);
+			temp = temp.replace(/\$\{heightLightTitle\}/g, heightLightHtml);
 			temp = temp.replace(/\$\{title\}/g, row.name);
 			temp = temp.replace(/\$\{displayType\}/g, utils.isMobile() ? "list" : "matrix");
 			$(".video-list").append($(temp));
 		}
 		bindListeners();
+	}
+	function getHeightLightHtml(name) {
+		if (store.searchingKeyword == "") {
+			return name;
+		}
+		var result = "";
+		var upperkeyword = store.searchingKeyword.toUpperCase();
+		var upperName = name.toUpperCase();
+		var startIndex = 0;
+		var endIndex = upperName.indexOf(upperkeyword, startIndex);
+		while (endIndex > -1) {
+			result += name.substring(startIndex, endIndex);
+			result += ("<em class=\"keyword\">" + name.substring(endIndex, endIndex + store.searchingKeyword.length) + "</em>");
+			startIndex += (endIndex + upperkeyword.length);
+			endIndex = upperName.indexOf(upperkeyword, startIndex);
+		}
+		result += name.substring(startIndex, name.length);
+		return result;
 	}
 	function bindListeners() {
 		$("div.img").bind("mousemove", (function (e) {
@@ -263,9 +313,17 @@ $(document).ready(function () {
 		$(".pages").empty();
 		showLoading(true);
 		$('html,body').animate({ scrollTop: 0 }, 50);
+		var url = "/list/";
+		if (store.isSearchResult) {
+			url = "/search/" + store.searchingKeyword + "/";
+		}
 		$.ajax({
-			url: "/list/" + to, async: true, success: function(data) {
-				renderPage(data);
+			url: url + to, async: true, success: function(data) {
+				var resultItems = data;
+				if (data.resultItems) {
+					resultItems = data.resultItems;
+				}
+				renderPage(resultItems);
 				updatePageBar(to);
 			}
 		});

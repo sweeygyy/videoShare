@@ -15,6 +15,8 @@ public class Configs {
 	
 	private int rowsPerPage;
 	
+	private long maxLengthPerRequest;
+	
 	private boolean renderPerview;
 	
 	private List<String> acceptTypes;
@@ -50,6 +52,14 @@ public class Configs {
 
 	public void setRowsPerPage(int rowsPerPage) {
 		this.rowsPerPage = rowsPerPage;
+	}
+	
+	public long getMaxLengthPerRequest() {
+		return maxLengthPerRequest;
+	}
+
+	public void setMaxLengthPerRequest(long maxLengthPerRequest) {
+		this.maxLengthPerRequest = maxLengthPerRequest;
 	}
 
 	public boolean isRenderPerview() {

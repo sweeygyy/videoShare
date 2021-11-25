@@ -277,6 +277,11 @@ a {
     color: #f25d8e;
 }
 
+em, i {
+    font-style: normal;
+    font-weight: 400;
+}
+
 .video-item .so-icon.watch-num {
     white-space: nowrap;
 }
@@ -540,7 +545,7 @@ a {
 }
 
 .arrow-down, .arrow-up {
-    background-image: url(//s1.hdslb.com/bfs/static/jinkela/search/assets/sprite-690be8a6ea.png);
+    background-image: url(/img/sprite-690be8a6ea.png);
     width: 12px;
     height: 6px;
     vertical-align: middle;
@@ -590,7 +595,7 @@ a {
 }
 
 .switch-wrap i {
-    background-image: url(//s1.hdslb.com/bfs/static/jinkela/search/assets/sprite-690be8a6ea.png);
+    background-image: url(/img/sprite-690be8a6ea.png);
     width: 16px;
     height: 16px;
 }
@@ -624,4 +629,94 @@ a {
     font-weight: 700;
     margin: 0 2px;
     padding: 0 10px;
+}
+
+.head-contain {
+    padding-top: 40px;
+}
+
+.search-wrap {
+	height: 44px;
+	margin: 0 auto;
+	position: relative;
+	width: 681px;
+}
+
+.clearfix:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+.search-wrap .search-logo {
+	background-image: url(/img/sprite-690be8a6ea.png);
+	background-position: 150px -80px;
+	width: 90px;
+	height: 35px;
+	float: left;
+	margin-top: 7px;
+}
+
+.search-wrap .search-block {
+    width: 524px;
+    float: left;
+    margin-left: 26px
+}
+
+.search-wrap .search-block .input-wrap {
+	position: relative;
+	background: #fff;
+	border-radius: 4px;
+	float: left;
+	width: 424px;
+	margin-right: 10px;
+}
+
+.search-wrap .search-block .input-wrap input {
+    box-sizing: border-box;
+    height: 42px;
+    box-shadow: none;
+    padding: 11px 15px;
+    background: transparent;
+    width: 424px;
+    border: 2px solid #ccd0d7;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #222
+}
+
+.search-wrap .search-block .search-button {
+    cursor: pointer;
+    float: left;
+    color: #fff;
+    background: #00a1d6;
+    font-size: 16px;
+    letter-spacing: 2px;
+    line-height: 42px;
+    text-align: center;
+    width: 90px;
+    border-radius: 4px
+}
+
+.search-wrap .search-block .search-button .icon-search-white {
+    background-image: url(/img/sprite-690be8a6ea.png);
+    background-position: -148px -327px;
+    width: 18px;
+    vertical-align: middle;
+    margin-top: -2px;
+    height: 19px;
+    display: inline-block
+}
+
+.search-wrap .search-block .search-text {
+    margin-left: 7px
+}
+
+#navigator {
+	height: 56px;
+	border-bottom: 1px solid #ccd0d7;
+	box-sizing: border-box;
 }
