@@ -46,7 +46,13 @@ $(document).ready(function () {
 	var store = {};
 	init();
 	store.searchingKeyword = "";
-	$(".search-button").bind("click", function(e) {
+	$(".search-button").bind("click", doSearch);
+	$("#search-keyword").bind("keyup", function (e) {
+		if (e.key == 'Enter') {
+			doSearch();
+		}
+	});
+	function doSearch(e) {
 		var value = $("#search-keyword").val();
 		if (value != store.searchingKeyword) {
 			$(".video-list").empty();
@@ -68,7 +74,7 @@ $(document).ready(function () {
 				});
 			}
 		}
-	});
+	}
 	function init() {
 		$.ajax({
 		url: "/list", async: true, success: function(data) {

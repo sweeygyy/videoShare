@@ -50,6 +50,7 @@ public class VideoUtils {
 
 	public VideoUtils(CommonUtils commonUtils) {
 		initVideos(CommonUtils.getVideoPath());
+		startScanThread(CommonUtils.getVideoPath());
 	}
 
 	/**
@@ -503,25 +504,50 @@ public class VideoUtils {
 				traverseFolder(child);
 			}
 		} else {
-			String fileType = file.getName().toUpperCase().substring(file.getName().lastIndexOf(".") + 1);
-			List<String> acceptTypes = CommonUtils.getConfigs().getAcceptTypes();
-			if (acceptTypes.contains(fileType)) {
-				VideoItem item = new VideoItem();
-				LOGGER.info("[" + file.getName() + "]");
-				String id = CommonUtils.getFileHashCode(file.getAbsolutePath());
-				item.setId(id);
-				item.setName(file.getName());
-				Map<String, Number> duration = getVideoDuration(file.getAbsolutePath());
-				item.setDuration((long) duration.get("time"));
-				item.setFramesCount((int) duration.get("frames"));
-				item.setScreenShot(
-						Base64Utils.encodeToString(getVideoScreenshot(id + "_cover", file.getAbsolutePath())));
-				item.setPath(file.getAbsolutePath());
-				VideoUtils.videoMap.put(item.getId(), item);
-				VideoUtils.videoList.add(item);
-				LOGGER.info("");
+			VideoItem item = file2VideoItem(file);
+			if (item != null) {
+				if (VideoUtils.videoMap.get(item.getId()) != null) {
+					VideoItem oldItem = VideoUtils.videoMap.get(item.getId());
+					oldItem.setName(item.getName());
+					oldItem.setDuration(item.getDuration());
+					oldItem.setFramesCount(item.getFramesCount());
+					oldItem.setPath(item.getPath());
+					oldItem.setScreenShot(item.getScreenShot());
+				} else {
+					VideoUtils.videoMap.put(item.getId(), item);
+					VideoUtils.videoList.add(item);
+				}
 			}
 		}
+	}
+	
+	private static VideoItem file2VideoItem(File file) {
+		String fileType = file.getName().toUpperCase().substring(file.getName().lastIndexOf(".") + 1);
+		List<String> acceptTypes = CommonUtils.getConfigs().getAcceptTypes();
+		long minTimeLength = CommonUtils.getConfigs().getMinTimeLength();
+		if (acceptTypes.contains(fileType)) {
+			LOGGER.info("[" + file.getName() + "]");
+			Map<String, Number> duration = getVideoDuration(file.getAbsolutePath());
+			if ((long)duration.get("time") < minTimeLength * 1000) {
+				LOGGER.info("时长小于" + minTimeLength + ", 忽略该文件");
+				return null;
+			}
+			VideoItem item = new VideoItem();
+			String id = CommonUtils.getFileHashCode(file.getAbsolutePath());
+			item.setId(id);
+			item.setName(file.getName());
+			item.setDuration((long) duration.get("time"));
+			item.setFramesCount((int) duration.get("frames"));
+			item.setScreenShot(
+					Base64Utils.encodeToString(getVideoScreenshot(id + "_cover", file.getAbsolutePath())));
+			item.setPath(file.getAbsolutePath());
+			return item;
+		}
+		return null;
+	}
+	
+	private static void startScanThread(String VideoPath) {
+		new Thread(new ScanFolderTimer(VideoPath)).start();
 	}
 
 	public static Map<String, VideoItem> getVideoMap() {
@@ -530,6 +556,32 @@ public class VideoUtils {
 
 	public static List<VideoItem> getVideoList() {
 		return videoList;
+	}
+	
+	static class ScanFolderTimer implements Runnable {
+		
+		private String videoPath;
+		
+		public ScanFolderTimer(String videoPath) {
+			this.videoPath = videoPath;
+		}
+		
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Thread.sleep(CommonUtils.getConfigs().getScanInterval());
+				} catch (InterruptedException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+				synchronized (videoMap) {
+					LOGGER.info("重新扫描目录信息");
+					File file = new File(videoPath);
+					traverseFolder(file);
+				}
+			}
+		}
+		
 	}
 	
 	static class PreviewScreenshotThread implements Runnable {

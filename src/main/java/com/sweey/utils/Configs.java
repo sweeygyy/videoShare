@@ -19,6 +19,10 @@ public class Configs {
 	
 	private boolean renderPerview;
 	
+	private long minTimeLength;
+	
+	private long scanInterval;
+	
 	private List<String> acceptTypes;
 	
 	public String getVideoPath() {
@@ -69,5 +73,20 @@ public class Configs {
 	public void setRenderPerview(boolean renderPerview) {
 		this.renderPerview = renderPerview;
 	}
-	
+
+	public long getMinTimeLength() {
+		return minTimeLength;
+	}
+
+	public void setMinTimeLength(long minTimeLength) {
+		this.minTimeLength = minTimeLength;
+	}
+
+	public long getScanInterval() {
+		return scanInterval;
+	}
+
+	public void setScanInterval(long scanInterval) {
+		this.scanInterval = scanInterval;
+	}
 }
