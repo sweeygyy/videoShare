@@ -13,6 +13,8 @@ public class Configs {
 	
 	private String pictureCachePath;
 	
+	private String metaCacheFile;
+	
 	private int rowsPerPage;
 	
 	private long maxLengthPerRequest;
@@ -37,9 +39,16 @@ public class Configs {
 		return pictureCachePath;
 	}
 
-	
 	public void setPictureCachePath(String pictureCachePath) {
 		this.pictureCachePath = pictureCachePath;
+	}
+	
+	public String getMetaCacheFile() {
+		return metaCacheFile;
+	}
+
+	public void setMetaCacheFile(String metaCacheFile) {
+		this.metaCacheFile = metaCacheFile;
 	}
 
 	public List<String> getAcceptTypes() {

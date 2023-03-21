@@ -120,6 +120,10 @@ public class CommonUtils {
 	public static String getPictureCachePath() {
 		return configs.getPictureCachePath();
 	}
+	
+	public static String getMetaCacheFile() {
+		return getPictureCachePath() + File.separator + configs.getMetaCacheFile();
+	}
 
 	public static String getVideoPath() {
 		return configs.getVideoPath();

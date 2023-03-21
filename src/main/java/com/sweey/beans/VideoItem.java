@@ -8,6 +8,7 @@ public class VideoItem {
 	private String screenShot;
 	private byte[] preview;
 	private String path;
+	private long lastModified;
 	public String getId() {
 		return id;
 	}
@@ -49,6 +50,12 @@ public class VideoItem {
 	}
 	public void setFramesCount(int framesCount) {
 		this.framesCount = framesCount;
+	}
+	public long getLastModified() {
+		return lastModified;
+	}
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
 	}
 	
 }

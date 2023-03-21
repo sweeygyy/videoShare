@@ -5,10 +5,24 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +40,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -38,14 +53,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
 import com.luciad.imageio.webp.WebPWriteParam;
+import com.sweey.beans.CacheItem;
 import com.sweey.beans.VideoItem;
 
 @Component
 public class VideoUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VideoUtils.class);
-
+	
 	private static Map<String, VideoItem> videoMap;
-
+	
 	private static List<VideoItem> videoList;
 
 	public VideoUtils(CommonUtils commonUtils) {
@@ -364,8 +380,21 @@ public class VideoUtils {
 	 * @param filePath 视频文件路径
 	 * @return 时间
 	 */
-	public static Map<String, Number> getVideoDuration(String filePath) {
+	public static Map<String, Number> getVideoDuration(File file, Map<String, CacheItem> cacheMap) {
 		Map<String, Number> result = new HashMap<String, Number>();
+		String filePath = file.getAbsolutePath();
+		try {
+			filePath = file.getCanonicalPath();
+		} catch (IOException e1) {
+			LOGGER.warn(e1.getMessage(), e1);
+		}
+		CacheItem cache = cacheMap.get(filePath);
+		if (cache != null && cache.getLastModified() == file.lastModified()) {
+			result.put("time", cache.getDuration());
+			result.put("frames", cache.getFramesCount());
+			LOGGER.info("使用缓存的元数据信息获取时长：time:" + result.get("time") + ";frames:" + result.get("frames"));
+			return result;
+		}
 		try {
 			LOGGER.info("*************开始获取视频长度*************");
 			long start = System.currentTimeMillis();
@@ -491,20 +520,108 @@ public class VideoUtils {
 		VideoUtils.videoMap = new HashMap<String, VideoItem>();
 		VideoUtils.videoList = new ArrayList<VideoItem>();
 		File file = new File(videoPath);
-		traverseFolder(file);
+		Map<String, CacheItem> cacheMap = readMetaCache();
+		traverseFolder(file, cacheMap);
+		storeMetaCache();
+	}
+	
+	/**
+	 * 初始化缓存信息，如果存在缓存文件，读取文件内容到内存
+	 */
+	private static Map<String, CacheItem> readMetaCache() {
+		Map<String, CacheItem> cacheMap = new HashMap<String, CacheItem>();
+		String cacheFileName = CommonUtils.getMetaCacheFile();
+		File metaCacheFile = new File(cacheFileName);
+		if (metaCacheFile.exists()) {
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new InputStreamReader(new FileInputStream(metaCacheFile), "UTF-8"));
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					CacheItem item = lineToCacheItem(line);
+					if (item != null) {
+						String key = item.getFilePatch();
+						CacheItem cache = cacheMap.get(key);
+						if (cache == null) {
+							cacheMap.put(key, item);
+						} else {
+							if (item.getLastModified() > cache.getLastModified()) {
+								cacheMap.put(key, item);
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						LOGGER.error(e.getMessage(), e);
+					}
+				}
+			}
+		}
+		return cacheMap;
+	}
+	
+	private static void storeMetaCache() {
+		String cacheFileName = CommonUtils.getMetaCacheFile();
+		File metaCacheFile = new File(cacheFileName);
+		BufferedWriter writer = null;
+		try {
+			if (!metaCacheFile.exists()) {
+				metaCacheFile.createNewFile();
+			}
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(metaCacheFile), "UTF-8"));
+			for (VideoItem item : videoList) {
+				String line = item.getPath() + "::" + item.getLastModified() + "::" + item.getId() + "::" + item.getDuration() + "::" + item.getFramesCount();
+				writer.write(line);
+				writer.newLine();
+			}
+			writer.flush();
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+	
+	private static CacheItem lineToCacheItem(String line) {
+		if (StringUtils.isEmpty(line)) {
+			return null;
+		}
+		String[] split = line.split("::");
+		if (split.length != 5) {
+			return null;
+		}
+		CacheItem item = new CacheItem();
+		item.setFilePatch(split[0]);
+		item.setLastModified(Long.parseLong(split[1]));
+		item.setHashCode(split[2]);
+		item.setDuration(Long.parseLong(split[3]));
+		item.setFramesCount(Integer.parseInt(split[4]));
+		return item;
 	}
 
-	private static void traverseFolder(File file) {
+	private static void traverseFolder(File file, Map<String, CacheItem> cacheMap) {
 		if (!file.exists()) {
 			return;
 		}
 		if (file.isDirectory()) {
 			File[] listFiles = file.listFiles();
 			for (File child : listFiles) {
-				traverseFolder(child);
+				traverseFolder(child, cacheMap);
 			}
 		} else {
-			VideoItem item = file2VideoItem(file);
+			VideoItem item = file2VideoItem(file, cacheMap);
 			if (item != null) {
 				if (VideoUtils.videoMap.get(item.getId()) != null) {
 					VideoItem oldItem = VideoUtils.videoMap.get(item.getId());
@@ -513,6 +630,7 @@ public class VideoUtils {
 					oldItem.setFramesCount(item.getFramesCount());
 					oldItem.setPath(item.getPath());
 					oldItem.setScreenShot(item.getScreenShot());
+					oldItem.setLastModified(item.getLastModified());
 				} else {
 					VideoUtils.videoMap.put(item.getId(), item);
 					VideoUtils.videoList.add(item);
@@ -521,29 +639,50 @@ public class VideoUtils {
 		}
 	}
 	
-	private static VideoItem file2VideoItem(File file) {
+	private static VideoItem file2VideoItem(File file, Map<String, CacheItem> cacheMap) {
 		String fileType = file.getName().toUpperCase().substring(file.getName().lastIndexOf(".") + 1);
 		List<String> acceptTypes = CommonUtils.getConfigs().getAcceptTypes();
 		long minTimeLength = CommonUtils.getConfigs().getMinTimeLength();
 		if (acceptTypes.contains(fileType)) {
 			LOGGER.info("[" + file.getName() + "]");
-			Map<String, Number> duration = getVideoDuration(file.getAbsolutePath());
+			Map<String, Number> duration = getVideoDuration(file, cacheMap);
 			if ((long)duration.get("time") < minTimeLength * 1000) {
 				LOGGER.info("时长小于" + minTimeLength + ", 忽略该文件");
 				return null;
 			}
 			VideoItem item = new VideoItem();
-			String id = CommonUtils.getFileHashCode(file.getAbsolutePath());
+			String id = getFileHashCode(file, cacheMap);
 			item.setId(id);
 			item.setName(file.getName());
 			item.setDuration((long) duration.get("time"));
 			item.setFramesCount((int) duration.get("frames"));
-			item.setScreenShot(
-					Base64Utils.encodeToString(getVideoScreenshot(id + "_cover", file.getAbsolutePath())));
-			item.setPath(file.getAbsolutePath());
+			String path = file.getAbsolutePath();
+			try {
+				path = file.getCanonicalPath();
+			} catch (IOException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}
+			item.setScreenShot(Base64Utils.encodeToString(getVideoScreenshot(id + "_cover", path)));
+			item.setPath(path);
+			item.setLastModified(file.lastModified());
+			LOGGER.info("");
 			return item;
 		}
 		return null;
+	}
+	
+	private static String getFileHashCode(File file, Map<String, CacheItem> cacheMap) {
+		try {
+			String cononicalPath = file.getCanonicalPath();
+			CacheItem cache = cacheMap.get(cononicalPath);
+			if (cache != null && cache.getLastModified() == file.lastModified()) {
+				LOGGER.info("使用缓存的元数据信息获取hashCode:" + cache.getHashCode());
+				return cache.getHashCode();
+			}
+			return CommonUtils.getFileHashCode(cononicalPath);
+		} catch (IOException e) {
+			return CommonUtils.getFileHashCode(file.getAbsolutePath());
+		}
 	}
 	
 	private static void startScanThread(String VideoPath) {
@@ -577,7 +716,9 @@ public class VideoUtils {
 				synchronized (videoMap) {
 					LOGGER.info("重新扫描目录信息");
 					File file = new File(videoPath);
-					traverseFolder(file);
+					Map<String, CacheItem> cacheMap = readMetaCache();
+					traverseFolder(file, cacheMap);
+					storeMetaCache();
 				}
 			}
 		}
