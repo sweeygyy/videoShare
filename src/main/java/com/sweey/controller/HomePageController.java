@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -26,8 +27,16 @@ public class HomePageController {
 	}
 	
 	@RequestMapping("/")
-	public String index() {
+	public String index(@RequestHeader("User-Agent") String userAgent) {
+		if (CommonUtils.isMobile(userAgent)) {
+			return "redirect:mobile";
+		}
 		return "index";
+	}
+	
+	@RequestMapping("/mobile")
+	public String mobile() {
+		return "mobile";
 	}
 	
 	@ResponseBody

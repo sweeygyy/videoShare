@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.MessageDigest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +117,12 @@ public class CommonUtils {
 			LOG.error(e.getMessage(), e);
 			return null;
 		}
+	}
+	
+	public static boolean isMobile(String userAgent) {
+		Pattern pattern = Pattern.compile("(ipod|iphone|android|coolpad|mmp|smartphone|midp|wap|xoom|symbian|j2me|blackberry|wince)");
+		Matcher matcher = pattern.matcher(userAgent.toLowerCase());
+		return matcher.find();
 	}
 
 	public static String getPictureCachePath() {

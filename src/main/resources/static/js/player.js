@@ -2,6 +2,7 @@ $(document).ready(function () {
 	var video = document.getElementById("player");
 	if (utils.isMobile()) {
 		$("#bilibiliPlayer").find(".bilibili-player-area").removeClass("video-state-pause");
+		$("#bilibili-player").css("width", "100%");
 	}
 	if (utils.isFireFox()) {
 		$(".player-poster").css("display", "none");
